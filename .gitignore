@@ -173,3 +173,5 @@ cython_debug/
 .env
 
 .idea
+
+config.py
