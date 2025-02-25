@@ -1173,6 +1173,17 @@ class SongGuesserApp(QMainWindow):
 # Main execution
 if __name__ == "__main__":
     app = QApplication(sys.argv)
+
+    script_dir = os.path.dirname(os.path.abspath(__file__))
+
+    icon_path = os.path.join(script_dir, "assets", "image1.png")
+
+    if os.path.exists(icon_path):
+        print_success(f"Icon found at: {icon_path}")
+        app.setWindowIcon(QIcon(icon_path))
+    else:
+        print_error(f"Icon not found at: {icon_path}")
+
     window = SongGuesserApp()
     window.show()
     sys.exit(app.exec())
