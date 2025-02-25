@@ -1,0 +1,6 @@
+colored>=2.2.3
+spotipy>=2.23.0
+requests>=2.31.0
+python-dotenv>=1.0.0
+lyricsgenius>=3.0.1
+PySide6>=6.5.0
