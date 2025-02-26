@@ -81,6 +81,7 @@ def get_lyrics(title, artist):
 def get_random_lyric_line(title, artist):
     """
     Get a random meaningful line from song lyrics.
+    If the selected line has 6 or fewer words, add an additional line.
 
     Args:
         title (str): Song title
@@ -119,6 +120,23 @@ def get_random_lyric_line(title, artist):
     if clean_lines:
         selected_line = random.choice(clean_lines)
         print_debug(f"Selected lyric: {selected_line}")
+
+        # Check if the line has 6 or fewer words
+        words = [word for word in selected_line.split() if word]
+        if len(words) <= 7 and len(clean_lines) > 1:
+            # Find the line's index and try to get the next line
+            try:
+                line_index = clean_lines.index(selected_line)
+                # If at the end of the list, wrap around to the beginning
+                next_line_index = (line_index + 1) % len(clean_lines)
+                next_line = clean_lines[next_line_index]
+
+                # Combine both lines
+                return f"{selected_line}\n{next_line}"
+            except (ValueError, IndexError):
+                # If there's any issue, just return the original line
+                return selected_line
+
         return selected_line
     else:
         print_warning(f"No suitable lyrics found for: {title} by {artist}")
