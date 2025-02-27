@@ -1,0 +1,393 @@
+/* Main Window Styles */
+QMainWindow {
+    background-color: transparent;
+}
+
+#mainContainer {
+    background-color: #0e1016;
+    border-radius: 15px;
+}
+
+#mainContent {
+    background-color: #0e1016;
+    color: white;
+    border: none;
+}
+
+/* Title Bar */
+#titleBar {
+    background-color: #080a10;
+    border-top-left-radius: 15px;
+    border-top-right-radius: 15px;
+    border-bottom: 1px solid #1e2028;
+}
+
+#titleLabel {
+    color: #e6c15a;
+    font-size: 18px;
+    font-weight: bold;
+    letter-spacing: 1px;
+}
+
+#logoLabel {
+    color: #e6c15a;
+    font-size: 22px;
+}
+
+#closeButton, #minimizeButton {
+    background-color: transparent;
+    color: #aaaaaa;
+    font-size: 16px;
+    border: none;
+    border-radius: 15px;
+}
+
+#closeButton:hover {
+    background-color: #e81123;
+    color: white;
+}
+
+#minimizeButton:hover {
+    background-color: #333333;
+    color: white;
+}
+
+/* Header Frame */
+#headerFrame {
+    border-bottom: 1px solid #1e2028;
+    padding-bottom: 5px;
+}
+
+/* Game Header */
+#gameHeader {
+    color: #e6c15a;
+    font-size: 22px;
+    font-weight: bold;
+    letter-spacing: 1px;
+}
+
+/* Stats Frames */
+#scoreFrame, #streakFrame {
+    background-color: #14161d;
+    border: 1px solid #1e2028;
+    border-radius: 8px;
+    padding: 10px;
+}
+
+#statLabel {
+    color: #aaaaaa;
+    font-size: 13px;
+    font-weight: bold;
+}
+
+#scoreValue, #streakValue {
+    color: #11c9f5;
+    font-size: 22px;
+    font-weight: bold;
+}
+
+/* Lyric Frame */
+#lyricFrame {
+    background-color: #14161d;
+    border: 1px solid #1e2028;
+    border-radius: 8px;
+}
+
+/* Quote Marks */
+#quoteOpen, #quoteClose {
+    color: #6b6d74;
+    font-size: 42px;
+    font-family: Georgia, serif;
+    font-weight: bold;
+}
+
+/* Lyric Display */
+#lyricDisplay {
+    background-color: transparent;
+    border: none;
+    padding: 10px;
+    color: white;
+    font-size: 20px;
+    line-height: 1.5;
+    font-style: italic;
+}
+
+/* Input Frame */
+#inputFrame {
+    background-color: transparent;
+}
+
+#inputLabel {
+    color: #aaaaaa;
+    font-size: 14px;
+    font-weight: bold;
+}
+
+#guessInput {
+    background-color: #14161d;
+    border: 1px solid #1e2028;
+    border-radius: 8px;
+    padding: 5px 15px;
+    color: white;
+    font-size: 16px;
+}
+
+#guessInput:focus {
+    border: 1px solid #e6c15a;
+    background-color: #191b22;
+}
+
+/* Buttons */
+#guessButton {
+    background-color: #14161d;
+    color: #e6c15a;
+    border: 1px solid #e6c15a;
+    border-radius: 8px;
+    font-size: 16px;
+    font-weight: bold;
+    letter-spacing: 1px;
+}
+
+#guessButton:hover {
+    background-color: #1a1d25;
+    border: 1px solid #f0cc62;
+}
+
+#guessButton:pressed {
+    background-color: #e6c15a;
+    color: #0e1016;
+}
+
+#newSongButton {
+    background-color: #14161d;
+    color: #11c9f5;
+    border: 1px solid #11c9f5;
+}
+
+#newSongButton:hover {
+    background-color: #1a1d25;
+    border: 1px solid #39d8ff;
+}
+
+#newSongButton:pressed {
+    background-color: #11c9f5;
+    color: #0e1016;
+}
+
+#skipButton {
+    background-color: #14161d;
+    color: #ff6b6b;
+    border: 1px solid #ff6b6b;
+}
+
+#skipButton:hover {
+    background-color: #1a1d25;
+    border: 1px solid #ff8c8c;
+}
+
+#skipButton:pressed {
+    background-color: #ff6b6b;
+    color: #0e1016;
+}
+
+/* Result Label */
+#resultLabel {
+    color: white;
+    font-size: 16px;
+    min-height: 30px;
+    font-weight: bold;
+}
+
+/* Album Selector Styles */
+#artistAlbumSelector {
+    background-color: transparent;
+}
+
+/* Welcome Frame */
+#welcomeFrame {
+    background-color: #191b22;
+    border: 1px solid #2a2d35;
+    border-radius: 10px;
+}
+
+#welcomeLogo {
+    color: #e6c15a;
+    font-size: 42px;
+    margin-bottom: 10px;
+}
+
+#welcomeTitle {
+    color: #e6c15a;
+    font-size: 28px;
+    font-weight: bold;
+    letter-spacing: 1px;
+    margin-bottom: 15px;
+}
+
+#welcomeText {
+    color: #d0d0d0;
+    font-size: 16px;
+    line-height: 1.5;
+}
+
+/* How to Play Frame */
+#howToFrame {
+    background-color: #191b22;
+    border: 1px solid #2a2d35;
+    border-radius: 10px;
+}
+
+#howToTitle {
+    color: #11c9f5;
+    font-size: 20px;
+    font-weight: bold;
+    letter-spacing: 1px;
+    margin-bottom: 10px;
+}
+
+#howToText {
+    color: #d0d0d0;
+    font-size: 16px;
+    line-height: 1.8;
+}
+
+/* Selection Frame */
+#selectionFrame {
+    background-color: #191b22;
+    border: 1px solid #2a2d35;
+    border-radius: 10px;
+}
+
+#selectorTitle {
+    color: #e6c15a;
+    font-size: 24px;
+    font-weight: bold;
+    letter-spacing: 1px;
+    margin-bottom: 10px;
+}
+
+#selectorLabel {
+    color: #aaaaaa;
+    font-size: 14px;
+    font-weight: bold;
+    margin-top: 5px;
+    margin-bottom: 5px;
+}
+
+#artistCombo, #albumCombo {
+    background-color: #14161d;
+    border: 1px solid #1e2028;
+    border-radius: 8px;
+    padding: 5px 15px;
+    color: white;
+    font-size: 16px;
+}
+
+#artistCombo::drop-down, #albumCombo::drop-down {
+    border: none;
+    width: 30px;
+}
+
+#artistCombo::down-arrow, #albumCombo::down-arrow {
+    width: 14px;
+    height: 14px;
+    image: none;
+    border-left: 2px solid #e6c15a;
+    border-bottom: 2px solid #e6c15a;
+    margin-right: 10px;
+    transform: rotate(-45deg);
+}
+
+#artistCombo QAbstractItemView, #albumCombo QAbstractItemView {
+    border: 1px solid #1e2028;
+    border-radius: 5px;
+    background-color: #1a1d25;
+    color: white;
+    selection-background-color: #2a2d35;  /* Darker selection background */
+    selection-color: #e6c15a;  /* Gold text for selected item */
+    outline: 0;
+}
+
+#artistCombo:focus, #albumCombo:focus {
+    border: 1px solid #e6c15a;
+}
+
+#albumInfo {
+    color: #11c9f5;
+    font-size: 16px;
+    margin: 15px 0;
+    font-weight: bold;
+}
+
+#confirmButton {
+    background-color: #14161d;
+    color: #e6c15a;
+    border: 2px solid #e6c15a;
+    border-radius: 8px;
+    font-size: 18px;
+    font-weight: bold;
+    letter-spacing: 1px;
+    margin-top: 15px;
+}
+
+#confirmButton:hover {
+    background-color: #1a1d25;
+    border: 2px solid #f0cc62;
+}
+
+#confirmButton:pressed {
+    background-color: #e6c15a;
+    color: #0e1016;
+}
+
+#albumDisplayFrame {
+    background-color: #14161d;
+    border: 1px solid #1e2028;
+    border-radius: 8px;
+    padding: 10px;
+}
+
+#albumValue {
+    color: #e6c15a;
+    font-size: 18px;
+    font-weight: bold;
+}
+
+#changeAlbumButton {
+    background-color: #14161d;
+    color: #e6c15a;
+    border: 1px solid #e6c15a;
+}
+
+#changeAlbumButton:hover {
+    background-color: #1a1d25;
+    border: 1px solid #f0cc62;
+}
+
+#changeAlbumButton:pressed {
+    background-color: #e6c15a;
+    color: #0e1016;
+}
+
+/* Song Suggestion Dialog */
+#suggestionDialog {
+    background-color: #1a1d25;
+    border: 1px solid #2a2d35;
+    border-radius: 5px;
+}
+
+#suggestionList {
+    background-color: #1a1d25;
+    color: white;
+    border: none;
+    outline: none;
+}
+
+#suggestionList::item {
+    padding: 8px 15px;
+}
+
+#suggestionList::item:selected, #suggestionList::item:hover {
+    background-color: #2a2d35;
+    color: #e6c15a;
+}

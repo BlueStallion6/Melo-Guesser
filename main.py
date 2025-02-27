@@ -15,7 +15,8 @@ try:
     from PySide6.QtWidgets import (QApplication, QMainWindow, QPushButton, QLabel,
                                    QVBoxLayout, QHBoxLayout, QWidget, QLineEdit,
                                    QFrame, QGridLayout, QSizePolicy, QProgressBar,
-                                   QComboBox, QScrollArea, QRadioButton, QButtonGroup)
+                                   QComboBox, QScrollArea, QRadioButton, QButtonGroup,
+                                   QDialog, QListWidget)
     from PySide6.QtCore import Qt, QRect, QPoint, Signal
     from PySide6.QtGui import QFont, QIcon, QPainterPath, QRegion
     from PySide6 import QtCore, QtWidgets, QtGui
@@ -145,34 +146,63 @@ def get_random_lyric_line(title, artist):
 
 # UI Components
 
-class RoundedProgressBar(QProgressBar):
+class SongSuggestionDialog(QDialog):
+    songSelected = Signal(str)
+
     def __init__(self, parent=None):
         super().__init__(parent)
-        self.setObjectName("roundedProgressBar")
-        self.setTextVisible(False)
-        self.setFixedHeight(4)
-        # Set a loading style animation
-        self.loading_style = """
-        #roundedProgressBar::chunk {
-            background-color: #e6c15a;
-            border-radius: 2px;
-            width: 10px;
-        }
-        """
-        self.normal_style = """
-        #roundedProgressBar::chunk {
-            background-color: #e6c15a;
-            border-radius: 2px;
-        }
-        """
-        self.setStyleSheet(self.normal_style)
+        self.setWindowFlags(Qt.Popup | Qt.FramelessWindowHint)
+        self.setObjectName("suggestionDialog")
 
-    def set_loading_mode(self, is_loading):
-        """Toggle loading animation mode"""
-        if is_loading:
-            self.setStyleSheet(self.loading_style)
+        self.layout = QVBoxLayout(self)
+        self.layout.setContentsMargins(0, 0, 0, 0)
+        self.layout.setSpacing(0)
+
+        self.list_widget = QListWidget()
+        self.list_widget.setObjectName("suggestionList")
+        self.list_widget.itemClicked.connect(self.on_item_selected)
+
+        self.layout.addWidget(self.list_widget)
+
+        # Note: Styles are now in style.qss file
+
+    def set_suggestions(self, songs):
+        """Update the list with new song suggestions"""
+        self.list_widget.clear()
+        for song in songs:
+            self.list_widget.addItem(song)
+
+        # Set size based on content
+        item_height = 36  # Approximate height per item
+        max_height = min(350, len(songs) * item_height + 10)
+        width = max(300, self.parent().width() if self.parent() else 300)
+        self.setFixedSize(width, max_height)
+
+    def on_item_selected(self, item):
+        """Emit signal when a song is selected"""
+        self.songSelected.emit(item.text())
+        self.hide()
+
+    def keyPressEvent(self, event):
+        """Handle keyboard navigation in the list"""
+        key = event.key()
+
+        if key == Qt.Key_Escape:
+            self.hide()
+            event.accept()
+        elif key == Qt.Key_Return or key == Qt.Key_Enter:
+            current_item = self.list_widget.currentItem()
+            if current_item:
+                self.on_item_selected(current_item)
+            event.accept()
+        elif key == Qt.Key_Up or key == Qt.Key_Down:
+            # Pass arrow keys to the list
+            self.list_widget.keyPressEvent(event)
         else:
-            self.setStyleSheet(self.normal_style)
+            # Pass other keys to the parent (input field)
+            if self.parent():
+                self.parent().keyPressEvent(event)
+            super().keyPressEvent(event)
 
 
 class RoundedFrame(QFrame):
@@ -410,8 +440,8 @@ class ArtistAlbumSelector(QWidget):
             year = album_data["release_year"]
             song_count = len(album_data["songs"])
 
-            #info_text = f"Released: {year} • {song_count} songs"
-            #self.album_info.setText(info_text)
+            # info_text = f"Released: {year} • {song_count} songs"
+            # self.album_info.setText(info_text)
 
     def confirm_selection(self):
         """Emit signal with selected artist, album and songs"""
@@ -503,9 +533,7 @@ class SongGuesserApp(QMainWindow):
         self.header.setAlignment(Qt.AlignCenter)
         header_layout.addWidget(self.header)
 
-        # Progress bar to indicate current song
-        self.progress_bar = RoundedProgressBar()
-        header_layout.addWidget(self.progress_bar)
+        # Progress bar removed from here
 
         self.game_layout.addWidget(header_frame)
 
@@ -594,12 +622,18 @@ class SongGuesserApp(QMainWindow):
         input_label.setObjectName("inputLabel")
         input_layout.addWidget(input_label)
 
+        # Create a line edit with custom song suggestion dialog
         self.guess_input = QLineEdit()
-        self.guess_input.setPlaceholderText("Enter song name...")
+        self.guess_input.setPlaceholderText("Start typing to see song suggestions...")
         self.guess_input.setObjectName("guessInput")
         self.guess_input.setMinimumHeight(50)
+        self.guess_input.textChanged.connect(self.on_guess_text_changed)
         self.guess_input.returnPressed.connect(self.submit_guess)
         input_layout.addWidget(self.guess_input)
+
+        # Create the suggestion dialog
+        self.suggestion_dialog = SongSuggestionDialog(self.guess_input)
+        self.suggestion_dialog.songSelected.connect(self.on_song_selected)
 
         self.submit_button = GuessButton("SUBMIT GUESS", icon="🎯")
         self.submit_button.clicked.connect(self.submit_guess)
@@ -665,7 +699,6 @@ class SongGuesserApp(QMainWindow):
         self.songs_played = 0
         self.score_label.setText("0")
         self.streak_label.setText("0")
-        self.progress_bar.setValue(0)
 
         # Show loading message
         self.lyric_label.setText("Now loading...")
@@ -675,36 +708,37 @@ class SongGuesserApp(QMainWindow):
 
     def new_song(self):
         """Load a new random song from the selected album"""
-        if not self.selected_songs:
-            return
+        try:
+            if not self.selected_songs:
+                return
 
-        # Choose a random song from the album
-        self.current_song = random.choice(self.selected_songs)
+            # Choose a random song from the album
+            self.current_song = random.choice(self.selected_songs)
 
-        # Show loading message and style
-        self.lyric_label.setText("Now loading...")
-        self.result_label.setText("")
-        self.progress_bar.set_loading_mode(True)
+            # Show loading message and style
+            self.lyric_label.setText("Now loading...")
+            self.result_label.setText("")
 
-        # Reset input field
-        self.guess_input.setText("")
-        self.songs_played += 1
+            # Reset input field safely
+            self.guess_input.clear()
+            # Hide suggestion dialog if visible
+            if hasattr(self, 'suggestion_dialog'):
+                self.suggestion_dialog.hide()
 
-        # Update progress bar
-        progress_value = min(100, int((self.songs_played / self.total_songs) * 100))
-        self.progress_bar.setValue(progress_value)
+            self.songs_played += 1
 
-        # Use a QTimer to allow the UI to update before fetching lyrics (which might be slow)
-        QtCore.QTimer.singleShot(100, lambda: self.fetch_and_display_lyrics())
+            # Use a QTimer to allow the UI to update before fetching lyrics (which might be slow)
+            QtCore.QTimer.singleShot(100, lambda: self.fetch_and_display_lyrics())
 
-        print_success(f"New song loaded: {self.current_song} by {self.current_artist}")
+            print_success(f"New song loaded: {self.current_song} by {self.current_artist}")
+        except Exception as e:
+            print_error(f"Error in new_song: {e}")
 
     def fetch_and_display_lyrics(self):
         """Fetch and display lyrics for the current song"""
         # Get and display a random lyric line
         lyric = get_random_lyric_line(self.current_song, self.current_artist)
         self.lyric_label.setText(lyric)
-        self.progress_bar.set_loading_mode(False)
 
     def skip_song(self):
         """Skip the current song"""
@@ -720,42 +754,83 @@ class SongGuesserApp(QMainWindow):
             # Load a new song after short delay
             QtCore.QTimer.singleShot(2100, self.new_song)
 
+    def on_guess_text_changed(self, text):
+        """Handle text changes in the guess input field"""
+        try:
+            if not text or len(text) < 1 or not self.selected_songs:
+                self.suggestion_dialog.hide()
+                return
+
+            # Filter songs that contain the text (case insensitive)
+            text_lower = text.lower()
+            matching_songs = [song for song in self.selected_songs
+                              if text_lower in song.lower()]
+
+            # Update and show the suggestion dialog if we have matches
+            if matching_songs:
+                self.suggestion_dialog.set_suggestions(matching_songs)
+
+                # Position the dialog below the input field
+                pos = self.guess_input.mapToGlobal(
+                    QPoint(0, self.guess_input.height()))
+                self.suggestion_dialog.move(pos)
+                self.suggestion_dialog.show()
+            else:
+                self.suggestion_dialog.hide()
+        except Exception as e:
+            print_error(f"Error in on_guess_text_changed: {e}")
+
+    def on_song_selected(self, song):
+        """Handle song selection from the suggestion dialog"""
+        try:
+            self.guess_input.setText(song)
+            self.guess_input.setFocus()
+        except Exception as e:
+            print_error(f"Error in on_song_selected: {e}")
+
     def submit_guess(self):
         """Process the user's guess"""
-        guess = self.guess_input.text().strip()
-        if not guess:
-            return
+        try:
+            # Hide suggestion dialog
+            self.suggestion_dialog.hide()
 
-        if not self.current_song:
-            self.result_label.setText("Please click 'New Song' first!")
-            return
+            # Get the guess text
+            guess = self.guess_input.text().strip()
+            if not guess:
+                return
 
-        # Improved string matching with some flexibility
-        if self.is_correct_guess(guess, self.current_song):
-            self.score += 1
-            self.streak += 1
-            self.max_streak = max(self.max_streak, self.streak)
+            if not self.current_song:
+                self.result_label.setText("Please click 'New Song' first!")
+                return
 
-            self.score_label.setText(str(self.score))
-            self.streak_label.setText(str(self.streak))
+            # Improved string matching with some flexibility
+            if self.is_correct_guess(guess, self.current_song):
+                self.score += 1
+                self.streak += 1
+                self.max_streak = max(self.max_streak, self.streak)
 
-            # Show success message with animations
-            self.result_label.setText(f"Correct! 🎵 The song was {self.current_song}")
+                self.score_label.setText(str(self.score))
+                self.streak_label.setText(str(self.streak))
 
-            # Highlight the score with animation
-            self.score_label.setStyleSheet("color: #6eff8a; font-size: 24px; font-weight: bold;")
-            QtCore.QTimer.singleShot(1000, lambda: self.score_label.setStyleSheet(""))
+                # Show success message with animations
+                self.result_label.setText(f"Correct! 🎵 The song was {self.current_song}")
 
-            # Show loading for the next song
-            QtCore.QTimer.singleShot(2000, lambda: self.lyric_label.setText("Now loading..."))
-            # Load a new song after displaying success
-            QtCore.QTimer.singleShot(2100, self.new_song)
-        else:
-            # Reset streak on wrong answer
-            self.streak = 0
-            self.streak_label.setText(str(self.streak))
+                # Highlight the score with animation
+                self.score_label.setStyleSheet("color: #6eff8a; font-size: 24px; font-weight: bold;")
+                QtCore.QTimer.singleShot(1000, lambda: self.score_label.setStyleSheet(""))
 
-            self.result_label.setText("Incorrect, try again!")
+                # Show loading for the next song
+                QtCore.QTimer.singleShot(2000, lambda: self.lyric_label.setText("Now loading..."))
+                # Load a new song after displaying success
+                QtCore.QTimer.singleShot(2100, self.new_song)
+            else:
+                # Reset streak on wrong answer
+                self.streak = 0
+                self.streak_label.setText(str(self.streak))
+
+                self.result_label.setText("Incorrect, try again!")
+        except Exception as e:
+            print_error(f"Error in submit_guess: {e}")
 
     def is_correct_guess(self, guess, actual):
         """Improved matching for song guesses"""
@@ -793,399 +868,24 @@ class SongGuesserApp(QMainWindow):
         self.album_selector.show()
 
     def apply_stylesheet(self):
-        # Original stylesheet plus additions for album selector
+        """Apply the external stylesheet from style.qss"""
+        try:
+            # Find the stylesheet file
+            script_dir = os.path.dirname(os.path.abspath(__file__))
+            style_path = os.path.join(script_dir, "style.qss")
 
-        # Base stylesheet (from original implementation)
-        base_stylesheet = """
-        /* Main Window Styles */
-        QMainWindow {
-            background-color: transparent;
-        }
+            if os.path.exists(style_path):
+                # Open and read the stylesheet
+                with open(style_path, "r") as style_file:
+                    stylesheet = style_file.read()
 
-        #mainContainer {
-            background-color: #0e1016;
-            border-radius: 15px;
-        }
-
-        #mainContent {
-            background-color: #0e1016;
-            color: white;
-            border: none;
-        }
-
-        /* Title Bar */
-        #titleBar {
-            background-color: #080a10;
-            border-top-left-radius: 15px;
-            border-top-right-radius: 15px;
-            border-bottom: 1px solid #1e2028;
-        }
-
-        #titleLabel {
-            color: #e6c15a;
-            font-size: 18px;
-            font-weight: bold;
-            letter-spacing: 1px;
-        }
-
-        #logoLabel {
-            color: #e6c15a;
-            font-size: 22px;
-        }
-
-        #closeButton, #minimizeButton {
-            background-color: transparent;
-            color: #aaaaaa;
-            font-size: 16px;
-            border: none;
-            border-radius: 15px;
-        }
-
-        #closeButton:hover {
-            background-color: #e81123;
-            color: white;
-        }
-
-        #minimizeButton:hover {
-            background-color: #333333;
-            color: white;
-        }
-
-        /* Header Frame */
-        #headerFrame {
-            border-bottom: 1px solid #1e2028;
-            padding-bottom: 5px;
-        }
-
-        /* Game Header */
-        #gameHeader {
-            color: #e6c15a;
-            font-size: 22px;
-            font-weight: bold;
-            letter-spacing: 1px;
-        }
-
-        /* Progress Bar */
-        #roundedProgressBar {
-            background-color: #1e2028;
-            border-radius: 2px;
-            border: none;
-        }
-
-        #roundedProgressBar::chunk {
-            background-color: #e6c15a;
-            border-radius: 2px;
-        }
-
-        /* Stats Frames */
-        #scoreFrame, #streakFrame {
-            background-color: #14161d;
-            border: 1px solid #1e2028;
-            border-radius: 8px;
-            padding: 10px;
-        }
-
-        #statLabel {
-            color: #aaaaaa;
-            font-size: 13px;
-            font-weight: bold;
-        }
-
-        #scoreValue, #streakValue {
-            color: #11c9f5;
-            font-size: 22px;
-            font-weight: bold;
-        }
-
-        /* Lyric Frame */
-        #lyricFrame {
-            background-color: #14161d;
-            border: 1px solid #1e2028;
-            border-radius: 8px;
-        }
-
-        /* Quote Marks */
-        #quoteOpen, #quoteClose {
-            color: #6b6d74;
-            font-size: 42px;
-            font-family: Georgia, serif;
-            font-weight: bold;
-        }
-
-        /* Lyric Display */
-        #lyricDisplay {
-            background-color: transparent;
-            border: none;
-            padding: 10px;
-            color: white;
-            font-size: 20px;
-            line-height: 1.5;
-            font-style: italic;
-        }
-
-        /* Input Frame */
-        #inputFrame {
-            background-color: transparent;
-        }
-
-        #inputLabel {
-            color: #aaaaaa;
-            font-size: 14px;
-            font-weight: bold;
-        }
-
-        #guessInput {
-            background-color: #14161d;
-            border: 1px solid #1e2028;
-            border-radius: 8px;
-            padding: 10px 15px;
-            color: white;
-            font-size: 16px;
-        }
-
-        #guessInput:focus {
-            border: 1px solid #e6c15a;
-            background-color: #191b22;
-        }
-
-        /* Buttons */
-        #guessButton {
-            background-color: #14161d;
-            color: #e6c15a;
-            border: 1px solid #e6c15a;
-            border-radius: 8px;
-            font-size: 16px;
-            font-weight: bold;
-            letter-spacing: 1px;
-        }
-
-        #guessButton:hover {
-            background-color: #1a1d25;
-            border: 1px solid #f0cc62;
-        }
-
-        #guessButton:pressed {
-            background-color: #e6c15a;
-            color: #0e1016;
-        }
-
-        #newSongButton {
-            background-color: #14161d;
-            color: #11c9f5;
-            border: 1px solid #11c9f5;
-        }
-
-        #newSongButton:hover {
-            background-color: #1a1d25;
-            border: 1px solid #39d8ff;
-        }
-
-        #newSongButton:pressed {
-            background-color: #11c9f5;
-            color: #0e1016;
-        }
-
-        #skipButton {
-            background-color: #14161d;
-            color: #ff6b6b;
-            border: 1px solid #ff6b6b;
-        }
-
-        #skipButton:hover {
-            background-color: #1a1d25;
-            border: 1px solid #ff8c8c;
-        }
-
-        #skipButton:pressed {
-            background-color: #ff6b6b;
-            color: #0e1016;
-        }
-
-        /* Result Label */
-        #resultLabel {
-            color: white;
-            font-size: 16px;
-            min-height: 30px;
-            font-weight: bold;
-        }
-        """
-
-        # Additional styles for the album selector
-        additional_styles = """
-        /* Album Selector Styles */
-        #artistAlbumSelector {
-            background-color: transparent;
-        }
-
-        /* Welcome Frame */
-        #welcomeFrame {
-            background-color: #191b22;
-            border: 1px solid #2a2d35;
-            border-radius: 10px;
-        }
-
-        #welcomeLogo {
-            color: #e6c15a;
-            font-size: 42px;
-            margin-bottom: 10px;
-        }
-
-        #welcomeTitle {
-            color: #e6c15a;
-            font-size: 28px;
-            font-weight: bold;
-            letter-spacing: 1px;
-            margin-bottom: 15px;
-        }
-
-        #welcomeText {
-            color: #d0d0d0;
-            font-size: 16px;
-            line-height: 1.5;
-        }
-
-        /* How to Play Frame */
-        #howToFrame {
-            background-color: #191b22;
-            border: 1px solid #2a2d35;
-            border-radius: 10px;
-        }
-
-        #howToTitle {
-            color: #11c9f5;
-            font-size: 20px;
-            font-weight: bold;
-            letter-spacing: 1px;
-            margin-bottom: 10px;
-        }
-
-        #howToText {
-            color: #d0d0d0;
-            font-size: 16px;
-            line-height: 1.8;
-        }
-
-        /* Selection Frame */
-        #selectionFrame {
-            background-color: #191b22;
-            border: 1px solid #2a2d35;
-            border-radius: 10px;
-        }
-
-        #selectorTitle {
-            color: #e6c15a;
-            font-size: 24px;
-            font-weight: bold;
-            letter-spacing: 1px;
-            margin-bottom: 10px;
-        }
-
-        #selectorLabel {
-            color: #aaaaaa;
-            font-size: 14px;
-            font-weight: bold;
-            margin-top: 5px;
-            margin-bottom: 5px;
-        }
-
-        #artistCombo, #albumCombo {
-            background-color: #14161d;
-            border: 1px solid #1e2028;
-            border-radius: 8px;
-            padding: 5px 15px;
-            color: white;
-            font-size: 16px;
-        }
-
-        #artistCombo::drop-down, #albumCombo::drop-down {
-            border: none;
-            width: 30px;
-        }
-
-        #artistCombo::down-arrow, #albumCombo::down-arrow {
-            width: 14px;
-            height: 14px;
-            image: none;
-            border-left: 2px solid #e6c15a;
-            border-bottom: 2px solid #e6c15a;
-            margin-right: 10px;
-            transform: rotate(-45deg);
-        }
-
-        #artistCombo QAbstractItemView, #albumCombo QAbstractItemView {
-            border: 1px solid #1e2028;
-            border-radius: 5px;
-            background-color: #1a1d25;
-            color: white;
-            selection-background-color: #2a2d35;  /* Darker selection background */
-            selection-color: #e6c15a;  /* Gold text for selected item */
-            outline: 0;
-        }
-
-        #artistCombo:focus, #albumCombo:focus {
-            border: 1px solid #e6c15a;
-        }
-
-        #albumInfo {
-            color: #11c9f5;
-            font-size: 16px;
-            margin: 15px 0;
-            font-weight: bold;
-        }
-
-        #confirmButton {
-            background-color: #14161d;
-            color: #e6c15a;
-            border: 2px solid #e6c15a;
-            border-radius: 8px;
-            font-size: 18px;
-            font-weight: bold;
-            letter-spacing: 1px;
-            margin-top: 15px;
-        }
-
-        #confirmButton:hover {
-            background-color: #1a1d25;
-            border: 2px solid #f0cc62;
-        }
-
-        #confirmButton:pressed {
-            background-color: #e6c15a;
-            color: #0e1016;
-        }
-
-        #albumDisplayFrame {
-            background-color: #14161d;
-            border: 1px solid #1e2028;
-            border-radius: 8px;
-            padding: 10px;
-        }
-
-        #albumValue {
-            color: #e6c15a;
-            font-size: 18px;
-            font-weight: bold;
-        }
-
-        #changeAlbumButton {
-            background-color: #14161d;
-            color: #e6c15a;
-            border: 1px solid #e6c15a;
-        }
-
-        #changeAlbumButton:hover {
-            background-color: #1a1d25;
-            border: 1px solid #f0cc62;
-        }
-
-        #changeAlbumButton:pressed {
-            background-color: #e6c15a;
-            color: #0e1016;
-        }
-        """
-
-        # Combine the styles and apply them
-        self.setStyleSheet(base_stylesheet + additional_styles)
+                # Apply the stylesheet
+                self.setStyleSheet(stylesheet)
+                print_success("Applied stylesheet from style.qss")
+            else:
+                print_error(f"Stylesheet not found at: {style_path}")
+        except Exception as e:
+            print_error(f"Error applying stylesheet: {e}")
 
 
 # Main execution
