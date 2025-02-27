@@ -24,7 +24,8 @@ try:
     # Import album databases
     from albums_database import (the_weeknd_albums, billie_eilish_albums,
                                  lana_del_rey_albums, tame_impala_albums,
-                                 olivia_rodrigo_albums)
+                                 olivia_rodrigo_albums, kanye_west_albums,
+                                 dua_lipa_albums, taylor_swift_albums)
 
 except ImportError as e:
     print(f"ImportError >> {e}")
@@ -44,12 +45,20 @@ if not GENIUS_ACCESS_TOKEN:
         print_error("Genius API token not found. Please set GENIUS_ACCESS_TOKEN in .env or config.py")
         exit(1)
 
+
+#######################################################################################################################
+
 # Artist constants
 The_Weeknd = "The Weeknd"
 Billie_Eilish = "Billie Eilish"
 Lana_Del_Rey = "Lana Del Rey"
 Tame_Impala = "Tame Impala"
 Olivia_Rodrigo = "Olivia Rodrigo"
+Kanye_West = "Kanye West"
+Dua_Lipa = "Dua Lipa"
+Taylor_Swift = "Taylor Swift"
+
+#######################################################################################################################
 
 # Initialize Genius API client
 genius = lyricsgenius.Genius(GENIUS_ACCESS_TOKEN, timeout=12)
@@ -358,14 +367,21 @@ class ArtistAlbumSelector(QWidget):
         self.artist_combo.setObjectName("artistCombo")
         self.artist_combo.setMinimumHeight(45)
 
+    ###################################################################################################################
+
         # Add artists
         self.artists = {
             "The Weeknd": the_weeknd_albums,
             "Billie Eilish": billie_eilish_albums,
             "Lana Del Rey": lana_del_rey_albums,
             "Tame Impala": tame_impala_albums,
-            "Olivia Rodrigo": olivia_rodrigo_albums
+            "Olivia Rodrigo": olivia_rodrigo_albums,
+            "Kanye West": kanye_west_albums,
+            "Dua Lipa": dua_lipa_albums,
+            "Taylor Swift": taylor_swift_albums
         }
+
+    ####################################################################################################################
 
         for artist in self.artists.keys():
             self.artist_combo.addItem(artist)
