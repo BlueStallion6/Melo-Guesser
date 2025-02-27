@@ -81,20 +81,19 @@ def get_lyrics(title, artist):
 
 def get_random_lyric_line(title, artist):
     """
-    Get a random meaningful line from song lyrics.
-    If the selected line has 6 or fewer words, add an additional line.
+    Get random meaningful lines from song lyrics.
 
     Args:
         title (str): Song title
         artist (str): Artist name
 
     Returns:
-        str: A random line from the lyrics or error message
+        tuple: (str, list) - A random line from the lyrics and additional lines for hints
     """
     full_lyrics = get_lyrics(title, artist)
 
     if not full_lyrics:
-        return "Lyrics not found."
+        return "Lyrics not found.", []
 
     # Split into lines
     lines = full_lyrics.split('\n')
@@ -117,31 +116,40 @@ def get_random_lyric_line(title, artist):
                 not 'Embed' in line):
             clean_lines.append(line.strip())
 
-    # Return a random line if we have any valid lines
+    # Return random lines if we have any valid lines
     if clean_lines:
-        selected_line = random.choice(clean_lines)
-        print_debug(f"Selected lyric: {selected_line}")
+        if len(clean_lines) <= 1:
+            return "\n".join(clean_lines), []
 
-        # Check if the line has 6 or fewer words
+        # Select a random starting index
+        start_idx = random.randint(0, len(clean_lines) - 1)
+
+        # Get the first line
+        selected_line = clean_lines[start_idx]
+
+        # Get additional lines for hints
+        hint_lines = []
+        for i in range(1, 5):  # Get up to 4 additional lines for hints
+            next_idx = (start_idx + i) % len(clean_lines)
+            hint_lines.append(clean_lines[next_idx])
+
+        # Check if the first line has 7 or fewer words
         words = [word for word in selected_line.split() if word]
         if len(words) <= 7 and len(clean_lines) > 1:
-            # Find the line's index and try to get the next line
-            try:
-                line_index = clean_lines.index(selected_line)
-                # If at the end of the list, wrap around to the beginning
-                next_line_index = (line_index + 1) % len(clean_lines)
-                next_line = clean_lines[next_line_index]
+            # Add the next line immediately
+            next_idx = (start_idx + 1) % len(clean_lines)
+            selected_line = f"{selected_line}\n{clean_lines[next_idx]}"
+            # Remove this line from hint lines
+            if hint_lines:
+                hint_lines.pop(0)
 
-                # Combine both lines
-                return f"{selected_line}\n{next_line}"
-            except (ValueError, IndexError):
-                # If there's any issue, just return the original line
-                return selected_line
+        print_debug(f"Selected lyric: {selected_line}")
+        print_debug(f"Hint lines available: {len(hint_lines)}")
 
-        return selected_line
+        return selected_line, hint_lines
     else:
         print_warning(f"No suitable lyrics found for: {title} by {artist}")
-        return "No suitable lyrics found."
+        return "No suitable lyrics found.", []
 
 
 # UI Components
@@ -371,10 +379,17 @@ class ArtistAlbumSelector(QWidget):
         self.album_combo.setObjectName("albumCombo")
         self.album_combo.setMinimumHeight(45)
 
-        # Album info display
+        # Let's remove these lines since we're using a simpler approach now
+        # self.album_combo.view().setItemDelegate(QtWidgets.QStyledItemDelegate())
+        # self.album_combo.currentIndexChanged.connect(self.style_album_option)
+
+        # Album info display with improved visibility
         self.album_info = QLabel()
         self.album_info.setObjectName("albumInfo")
         self.album_info.setAlignment(Qt.AlignCenter)
+        self.album_info.setMinimumHeight(40)  # Taller minimum height
+        self.album_info.setStyleSheet(
+            "color: #11c9f5; font-size: 16px; font-weight: bold; margin: 15px 0;")  # Direct styling
 
         # Confirm button
         self.confirm_button = QPushButton("START PLAYING")
@@ -382,12 +397,23 @@ class ArtistAlbumSelector(QWidget):
         self.confirm_button.setMinimumHeight(50)
         self.confirm_button.clicked.connect(self.confirm_selection)
 
-        # Add to layout
+        # Make sure to add the album info to the layout
         selection_layout.addWidget(artist_label)
         selection_layout.addWidget(self.artist_combo)
         selection_layout.addWidget(album_label)
         selection_layout.addWidget(self.album_combo)
-        selection_layout.addWidget(self.album_info)
+
+        # Add a spacer between combo and info
+        selection_layout.addSpacing(10)
+
+        # Add album info in a separate frame to make it more visible
+        info_frame = QFrame()
+        info_frame.setMinimumHeight(50)
+        info_frame.setStyleSheet("background-color: #191b22; border-radius: 8px; padding: 5px;")
+        info_layout = QVBoxLayout(info_frame)
+        info_layout.addWidget(self.album_info)
+        selection_layout.addWidget(info_frame)
+
         selection_layout.addWidget(self.confirm_button)
 
         main_layout.addWidget(selection_frame)
@@ -403,7 +429,7 @@ class ArtistAlbumSelector(QWidget):
         how_to_title.setAlignment(Qt.AlignCenter)
 
         how_to_text = QLabel(
-            "1. Select an artist and album\n2. Read the displayed lyrics\n3. Guess which song they're from\n4. Build your streak and score!")
+            "1. Select an artist and album\n2. Read the displayed lyrics\n3. Guess which song they're from\n4. Use HINT for more lyrics (only once per song)\n5. Build your streak and score!")
         how_to_text.setObjectName("howToText")
         how_to_text.setAlignment(Qt.AlignCenter)
 
@@ -420,6 +446,10 @@ class ArtistAlbumSelector(QWidget):
         self.album_combo.clear()
 
         if artist_name in self.artists:
+            # Add "All Albums" option first with special prefix
+            self.album_combo.addItem("⭐ All Albums ⭐")
+
+            # Add individual albums
             albums = self.artists[artist_name]
             for album_name in albums.keys():
                 self.album_combo.addItem(album_name)
@@ -435,22 +465,39 @@ class ArtistAlbumSelector(QWidget):
         artist = self.artist_combo.currentText()
         album = self.album_combo.currentText()
 
-        if artist in self.artists and album in self.artists[artist]:
+        # First make sure the label is visible
+        self.album_info.setVisible(True)
+
+        if album == "⭐ All Albums ⭐":
+            # Count total songs across all albums
+            total_songs = 0
+            for album_data in self.artists[artist].values():
+                total_songs += len(album_data["songs"])
+            self.album_info.setText(f"Total: {total_songs} songs")
+        elif artist in self.artists and album in self.artists[artist]:
             album_data = self.artists[artist][album]
             year = album_data["release_year"]
             song_count = len(album_data["songs"])
+            self.album_info.setText(f"{year} • {song_count} songs")
 
-            # info_text = f"Released: {year} • {song_count} songs"
-            # self.album_info.setText(info_text)
+        # Print for debugging
+        print_debug(f"Album info updated: {self.album_info.text()}")
 
     def confirm_selection(self):
         """Emit signal with selected artist, album and songs"""
         artist = self.artist_combo.currentText()
         album = self.album_combo.currentText()
 
-        if artist in self.artists and album in self.artists[artist]:
-            songs = self.artists[artist][album]["songs"]
-            self.selectionMade.emit(artist, album, songs)
+        if artist in self.artists:
+            if album == "⭐ All Albums ⭐":
+                # Collect all songs from all albums by this artist
+                all_songs = []
+                for album_name, album_data in self.artists[artist].items():
+                    all_songs.extend(album_data["songs"])
+                self.selectionMade.emit(artist, "All Albums", all_songs)
+            elif album in self.artists[artist]:
+                songs = self.artists[artist][album]["songs"]
+                self.selectionMade.emit(artist, album, songs)
 
 
 # Main Application Class
@@ -508,6 +555,8 @@ class SongGuesserApp(QMainWindow):
         self.max_streak = 0
         self.songs_played = 0
         self.total_songs = 5
+        self.hint_lines = []
+        self.hint_used = False
 
         # Create the album selector widget
         self.album_selector = ArtistAlbumSelector()
@@ -651,19 +700,20 @@ class SongGuesserApp(QMainWindow):
         buttons_layout = QHBoxLayout()
         buttons_layout.setSpacing(15)
 
-        self.new_song_button = GuessButton("NEW SONG", icon="🎵")
-        self.new_song_button.clicked.connect(self.new_song)
-        self.new_song_button.setObjectName("newSongButton")
+        # HINT button (replacing NEW SONG button)
+        self.hint_button = GuessButton("HINT", icon="💡")
+        self.hint_button.clicked.connect(self.show_hint)
+        self.hint_button.setObjectName("newSongButton")  # Keep same styling
 
         self.skip_button = GuessButton("SKIP", icon="⏭️")
         self.skip_button.clicked.connect(self.skip_song)
         self.skip_button.setObjectName("skipButton")
 
-        self.change_album_button = GuessButton("CHANGE ALBUM", icon="💿")
+        self.change_album_button = GuessButton("MAIN MENU", icon="💿")
         self.change_album_button.clicked.connect(self.change_album)
         self.change_album_button.setObjectName("changeAlbumButton")
 
-        buttons_layout.addWidget(self.new_song_button)
+        buttons_layout.addWidget(self.hint_button)
         buttons_layout.addWidget(self.skip_button)
         buttons_layout.addWidget(self.change_album_button)
 
@@ -696,6 +746,7 @@ class SongGuesserApp(QMainWindow):
         # Reset game stats
         self.score = 0
         self.streak = 0
+        self.max_streak = 0  # Reset max streak when changing albums
         self.songs_played = 0
         self.score_label.setText("0")
         self.streak_label.setText("0")
@@ -725,6 +776,10 @@ class SongGuesserApp(QMainWindow):
             if hasattr(self, 'suggestion_dialog'):
                 self.suggestion_dialog.hide()
 
+            # Reset hint state
+            self.hint_used = False
+            self.hint_lines = []
+
             self.songs_played += 1
 
             # Use a QTimer to allow the UI to update before fetching lyrics (which might be slow)
@@ -736,16 +791,52 @@ class SongGuesserApp(QMainWindow):
 
     def fetch_and_display_lyrics(self):
         """Fetch and display lyrics for the current song"""
-        # Get and display a random lyric line
-        lyric = get_random_lyric_line(self.current_song, self.current_artist)
+        # Get a random lyric line and hint lines
+        lyric, self.hint_lines = get_random_lyric_line(self.current_song, self.current_artist)
         self.lyric_label.setText(lyric)
+        self.hint_used = False
+
+    def show_hint(self):
+        """Show additional lyrics as a hint"""
+        if not self.current_song or not self.hint_lines:
+            return
+
+        # Check if hint was already used
+        if self.hint_used:
+            self.result_label.setText("You've already used your hint for this song!")
+            return
+
+        # Mark that a hint was used
+        self.hint_used = True
+
+        # Get the current lyrics
+        current_lyrics = self.lyric_label.text()
+
+        # Add up to 2 more lines from the hint lines
+        lines_to_add = min(2, len(self.hint_lines))
+
+        if lines_to_add <= 0:
+            self.result_label.setText("No hints available for this song!")
+            return
+
+        new_lines = []
+        for i in range(lines_to_add):
+            if i < len(self.hint_lines):
+                new_lines.append(self.hint_lines[i])
+
+        # Update the lyrics display
+        updated_lyrics = current_lyrics + "\n" + "\n".join(new_lines)
+        self.lyric_label.setText(updated_lyrics)
+
+        # Inform the user
+        self.result_label.setText("Hint added! Score and streak will not increase if you guess correctly now.")
 
     def skip_song(self):
         """Skip the current song"""
         if self.current_song:
-            # Reset streak when skipping
-            self.streak = 0
-            self.streak_label.setText(str(self.streak))
+            # Reset score when skipping, but keep streak
+            self.score = 0
+            self.score_label.setText(str(self.score))
 
             self.result_label.setText(f"The song was: {self.current_song}")
 
@@ -800,20 +891,27 @@ class SongGuesserApp(QMainWindow):
                 return
 
             if not self.current_song:
-                self.result_label.setText("Please click 'New Song' first!")
+                self.result_label.setText("Please skip to get a new song first!")
                 return
 
             # Improved string matching with some flexibility
             if self.is_correct_guess(guess, self.current_song):
-                self.score += 1
-                self.streak += 1
-                self.max_streak = max(self.max_streak, self.streak)
+                # Only increase score and streak if hint wasn't used
+                if not self.hint_used:
+                    self.score += 1
+                    self.score_label.setText(str(self.score))
 
-                self.score_label.setText(str(self.score))
-                self.streak_label.setText(str(self.streak))
+                    # Only increase streak if hint wasn't used
+                    self.streak += 1
+                    self.max_streak = max(self.max_streak, self.streak)
+                    self.streak_label.setText(str(self.streak))
+
+                    success_message = "Correct! 🎵 The song was " + self.current_song
+                else:
+                    success_message = "Correct with hint! 🎵 The song was " + self.current_song
 
                 # Show success message with animations
-                self.result_label.setText(f"Correct! 🎵 The song was {self.current_song}")
+                self.result_label.setText(success_message)
 
                 # Highlight the score with animation
                 self.score_label.setStyleSheet("color: #6eff8a; font-size: 24px; font-weight: bold;")
@@ -824,9 +922,9 @@ class SongGuesserApp(QMainWindow):
                 # Load a new song after displaying success
                 QtCore.QTimer.singleShot(2100, self.new_song)
             else:
-                # Reset streak on wrong answer
-                self.streak = 0
-                self.streak_label.setText(str(self.streak))
+                # Reset score on wrong answer, but keep streak
+                self.score = 0
+                self.score_label.setText(str(self.score))
 
                 self.result_label.setText("Incorrect, try again!")
         except Exception as e:
@@ -862,6 +960,7 @@ class SongGuesserApp(QMainWindow):
         self.current_artist = ""
         self.selected_album = ""
         self.selected_songs = []
+        self.max_streak = 0  # Reset max streak when changing albums
 
         # Hide game and show selector
         self.game_widget.hide()
