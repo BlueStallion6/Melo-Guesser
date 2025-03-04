@@ -325,7 +325,7 @@ class ArtistAlbumSelector(QWidget):
         welcome_frame = RoundedFrame(radius=10)
         welcome_frame.setObjectName("welcomeFrame")
         welcome_layout = QVBoxLayout(welcome_frame)
-        welcome_layout.setContentsMargins(25, 25, 25, 25)
+        welcome_layout.setContentsMargins(25, 25, 20, 20)
 
         welcome_logo = QLabel("🎵✨")
         welcome_logo.setObjectName("welcomeLogo")
