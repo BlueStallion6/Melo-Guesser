@@ -536,7 +536,7 @@ class SongGuesserApp(QMainWindow):
         else:  # Full HD or lower resolution
             # Make the app significantly taller on Full HD screens - increase to 85%
             width = int(screen_width * 0.65)
-            height = int(screen_height * 0.85)  # Increased from 0.75 to 0.85
+            height = int(screen_height * 0.9)  # Increased from 0.85 to 0.9 (90% of screen height)
 
         # Enforce minimum dimensions
         min_width = 650
