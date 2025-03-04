@@ -1,6 +1,6 @@
 /* Base font size adjustment for high resolution displays */
 * {
-    font-size: 16px; /* Base size for 2K resolution */
+    font-size: 16px; /* Base size for all resolutions */
 }
 
 /* Main Window Styles */
@@ -395,27 +395,4 @@ QMainWindow {
 #suggestionList::item:selected, #suggestionList::item:hover {
     background-color: #2a2d35;
     color: #e6c15a;
-}
-
-/* Responsive adjustments for Full HD (1920x1080) screens */
-@media (max-width: 1920px) {
-    /* Instead of scaling all fonts, provide specific adjustments only for Full HD */
-
-    /* Set proper heights for key UI elements in Full HD */
-    #guessInput, #submitButton {
-        min-height: 45px;
-    }
-
-    #artistCombo, #albumCombo {
-        min-height: 40px;
-    }
-
-    #confirmButton, #guessButton, #newSongButton, #skipButton, #changeAlbumButton {
-        min-height: 45px;
-    }
-
-    /* Ensure selection frame has enough space */
-    #selectionFrame {
-        min-height: 300px;
-    }
 }

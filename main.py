@@ -45,7 +45,6 @@ if not GENIUS_ACCESS_TOKEN:
         print_error("Genius API token not found. Please set GENIUS_ACCESS_TOKEN in .env or config.py")
         exit(1)
 
-
 #######################################################################################################################
 
 # Artist constants
@@ -325,7 +324,7 @@ class ArtistAlbumSelector(QWidget):
         welcome_frame = RoundedFrame(radius=10)
         welcome_frame.setObjectName("welcomeFrame")
         welcome_layout = QVBoxLayout(welcome_frame)
-        welcome_layout.setContentsMargins(25, 25, 20, 20)
+        welcome_layout.setContentsMargins(25, 25, 25, 25)
 
         welcome_logo = QLabel("🎵✨")
         welcome_logo.setObjectName("welcomeLogo")
@@ -350,6 +349,7 @@ class ArtistAlbumSelector(QWidget):
         # Selection section frame
         selection_frame = RoundedFrame(radius=10)
         selection_frame.setObjectName("selectionFrame")
+        self.selection_frame = selection_frame  # Store reference for later access
         selection_layout = QVBoxLayout(selection_frame)
         selection_layout.setContentsMargins(25, 25, 25, 25)
         selection_layout.setSpacing(20)
@@ -367,7 +367,7 @@ class ArtistAlbumSelector(QWidget):
         self.artist_combo.setObjectName("artistCombo")
         self.artist_combo.setMinimumHeight(45)
 
-    ###################################################################################################################
+        ###################################################################################################################
 
         # Add artists
         self.artists = {
@@ -381,7 +381,7 @@ class ArtistAlbumSelector(QWidget):
             "Taylor Swift": taylor_swift_albums
         }
 
-    ####################################################################################################################
+        ####################################################################################################################
 
         for artist in self.artists.keys():
             self.artist_combo.addItem(artist)
@@ -756,6 +756,8 @@ class SongGuesserApp(QMainWindow):
         # Apply stylesheet
         self.apply_stylesheet()
 
+        # Apply resolution-specific adjustments
+        self.adjust_for_resolution()
 
     def on_album_selected(self, artist, album, songs):
         """Handle album selection"""
@@ -1007,40 +1009,60 @@ class SongGuesserApp(QMainWindow):
                 with open(style_path, "r") as style_file:
                     stylesheet = style_file.read()
 
-                # Detect screen resolution and apply scaling if needed
-                screen = QApplication.primaryScreen().geometry()
-                screen_width = screen.width()
-
-                # Create a custom stylesheet with resolution-dependent scaling
-                custom_stylesheet = stylesheet
-
-                # Apply scaling for different resolutions
-                if screen_width <= 1920:  # Full HD or lower
-                    # Add scaling for Full HD screens
-                    # This approach keeps the original size on 2K and scales down for Full HD
-                    custom_stylesheet = """
-                    /* Resolution-specific scaling for Full HD screens */
-                    * {
-                        /* Keep the base size but scale UI elements by 90% for Full HD */
-                        font-size: 90%;
-                    }
-                    """ + stylesheet
-                else:  # 2K or higher (original size)
-                    custom_stylesheet = """
-                    /* Resolution-specific scaling for 2K+ screens */
-                    * {
-                        /* Use original size for 2K screens */
-                        font-size: 100%;
-                    }
-                    """ + stylesheet
-
-                # Apply the final stylesheet
-                self.setStyleSheet(custom_stylesheet)
-                print_success(f"Applied stylesheet from style.qss with resolution scaling for {screen_width}px width")
+                # Apply the stylesheet
+                self.setStyleSheet(stylesheet)
+                print_success(f"Applied stylesheet from style.qss")
             else:
                 print_error(f"Stylesheet not found at: {style_path}")
         except Exception as e:
             print_error(f"Error applying stylesheet: {e}")
+
+    def adjust_for_resolution(self):
+        """Apply specific size adjustments based on the screen resolution"""
+        screen = QApplication.primaryScreen().geometry()
+        screen_width = screen.width()
+
+        if screen_width <= 1920:  # Full HD or lower resolution
+            # Minimum heights for critical components
+            min_height_combo = 45
+            min_height_button = 50
+            min_height_input = 50
+
+            # Adjust selection frame vertical spacing
+            if hasattr(self.album_selector, 'layout'):
+                self.album_selector.layout().setSpacing(15)  # Reduce spacing in selector view
+
+            # Fix combo box heights
+            if hasattr(self.album_selector, 'artist_combo'):
+                self.album_selector.artist_combo.setMinimumHeight(min_height_combo)
+            if hasattr(self.album_selector, 'album_combo'):
+                self.album_selector.album_combo.setMinimumHeight(min_height_combo)
+
+            # Fix button heights
+            if hasattr(self.album_selector, 'confirm_button'):
+                self.album_selector.confirm_button.setMinimumHeight(min_height_button)
+
+            # Fix game UI elements
+            if hasattr(self, 'guess_input'):
+                self.guess_input.setMinimumHeight(min_height_input)
+            if hasattr(self, 'submit_button'):
+                self.submit_button.setMinimumHeight(min_height_button)
+            if hasattr(self, 'hint_button'):
+                self.hint_button.setMinimumHeight(min_height_button)
+            if hasattr(self, 'skip_button'):
+                self.skip_button.setMinimumHeight(min_height_button)
+            if hasattr(self, 'change_album_button'):
+                self.change_album_button.setMinimumHeight(min_height_button)
+
+            # Adjust frame margins and spacing
+            self.content_layout.setContentsMargins(20, 15, 20, 15)
+            self.content_layout.setSpacing(15)
+
+            # Set specific minimum height for selection frame
+            if hasattr(self.album_selector, 'selection_frame'):
+                self.album_selector.selection_frame.setMinimumHeight(320)
+
+            print_debug(f"Applied Full HD resolution adjustments")
 
     def adjust_ui_elements(self):
         """Adjust UI element dimensions based on window size"""
@@ -1073,6 +1095,9 @@ class SongGuesserApp(QMainWindow):
         super().showEvent(event)
         # Adjust UI elements based on window size
         QtCore.QTimer.singleShot(10, self.adjust_ui_elements)
+        # Apply resolution-specific adjustments
+        QtCore.QTimer.singleShot(20, self.adjust_for_resolution)
+
 
 # Main execution
 if __name__ == "__main__":
