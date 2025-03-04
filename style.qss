@@ -332,7 +332,8 @@ QMainWindow {
     font-size: 18px;
     font-weight: bold;
     letter-spacing: 1px;
-    margin-top: 15px;
+    margin-top: 5px;
+    margin-bottom: 10px;
 }
 
 #confirmButton:hover {
