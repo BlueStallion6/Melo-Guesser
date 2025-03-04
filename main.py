@@ -16,7 +16,7 @@ try:
                                    QVBoxLayout, QHBoxLayout, QWidget, QLineEdit,
                                    QFrame, QGridLayout, QSizePolicy, QProgressBar,
                                    QComboBox, QScrollArea, QRadioButton, QButtonGroup,
-                                   QDialog, QListWidget)
+                                   QDialog, QListWidget, QSpacerItem)
     from PySide6.QtCore import Qt, QRect, QPoint, Signal
     from PySide6.QtGui import QFont, QIcon, QPainterPath, QRegion
     from PySide6 import QtCore, QtWidgets, QtGui
@@ -351,15 +351,26 @@ class ArtistAlbumSelector(QWidget):
         selection_frame.setObjectName("selectionFrame")
         self.selection_frame = selection_frame  # Store reference for later access
         selection_layout = QVBoxLayout(selection_frame)
-        selection_layout.setContentsMargins(25, 25, 25, 25)
+        selection_layout.setContentsMargins(25, 20, 25, 25)  # Reduced top margin to 20px
         selection_layout.setSpacing(20)
 
-        # Title
+        # Title - direct positioning
         title = QLabel("SELECT YOUR MUSIC")
         title.setObjectName("selectorTitle")
-        title.setMinimumHeight(30)  # Ensure enough height
         title.setAlignment(Qt.AlignCenter)
-        selection_layout.addWidget(title)
+        title.setMinimumHeight(35)
+        title.setContentsMargins(0, 0, 0, 5)  # Minimal margins
+
+        # Create spacer for fine-tuned positioning
+        spacer = QSpacerItem(20, 2, QSizePolicy.Minimum, QSizePolicy.Fixed)
+
+        # Custom layout arrangement to position title higher
+        selection_layout.addSpacerItem(spacer)  # Tiny spacer at top
+        selection_layout.addWidget(title)  # Add title immediately after small spacer
+        selection_layout.addSpacing(10)  # Add space after title
+
+        # Apply specific style with negative margins to pull it up
+        title.setStyleSheet("color: #e6c15a; font-size: 24px; font-weight: bold; margin-top: -5px;")
 
         # Artist selection
         artist_label = QLabel("CHOOSE AN ARTIST")
