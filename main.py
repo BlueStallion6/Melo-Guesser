@@ -524,16 +524,28 @@ class SongGuesserApp(QMainWindow):
 
         # Get screen size and calculate window size
         screen = QApplication.primaryScreen().geometry()
-        width = int(screen.width() * 0.55)
-        height = int(screen.height() * 0.7)
+        screen_width = screen.width()
+        screen_height = screen.height()
+
+        # Set window size based on screen resolution
+        if screen_width >= 2560:  # 2K or higher resolution
+            # For 2K+, use the original scaling
+            width = int(screen_width * 0.55)
+            height = int(screen_height * 0.7)
+        else:  # Full HD or lower resolution
+            # For Full HD, increase the percentage slightly to maintain visibility
+            width = int(screen_width * 0.65)
+            height = int(screen_height * 0.75)
+
+        # Enforce minimum dimensions
         min_width = 650
         min_height = 600
         width = max(width, min_width)
         height = max(height, min_height)
 
         # Center window
-        window_x = (screen.width() - width) // 2
-        window_y = (screen.height() - height) // 2
+        window_x = (screen_width - width) // 2
+        window_y = (screen_height - height) // 2
         self.setGeometry(QRect(window_x, window_y, width, height))
         self.setFixedSize(width, height)
 
@@ -743,6 +755,7 @@ class SongGuesserApp(QMainWindow):
 
         # Apply stylesheet
         self.apply_stylesheet()
+
 
     def on_album_selected(self, artist, album, songs):
         """Handle album selection"""
@@ -983,7 +996,7 @@ class SongGuesserApp(QMainWindow):
         self.album_selector.show()
 
     def apply_stylesheet(self):
-        """Apply the external stylesheet from style.qss"""
+        """Apply the external stylesheet from style.qss with appropriate scaling"""
         try:
             # Find the stylesheet file
             script_dir = os.path.dirname(os.path.abspath(__file__))
@@ -994,14 +1007,72 @@ class SongGuesserApp(QMainWindow):
                 with open(style_path, "r") as style_file:
                     stylesheet = style_file.read()
 
-                # Apply the stylesheet
-                self.setStyleSheet(stylesheet)
-                print_success("Applied stylesheet from style.qss")
+                # Detect screen resolution and apply scaling if needed
+                screen = QApplication.primaryScreen().geometry()
+                screen_width = screen.width()
+
+                # Create a custom stylesheet with resolution-dependent scaling
+                custom_stylesheet = stylesheet
+
+                # Apply scaling for different resolutions
+                if screen_width <= 1920:  # Full HD or lower
+                    # Add scaling for Full HD screens
+                    # This approach keeps the original size on 2K and scales down for Full HD
+                    custom_stylesheet = """
+                    /* Resolution-specific scaling for Full HD screens */
+                    * {
+                        /* Keep the base size but scale UI elements by 90% for Full HD */
+                        font-size: 90%;
+                    }
+                    """ + stylesheet
+                else:  # 2K or higher (original size)
+                    custom_stylesheet = """
+                    /* Resolution-specific scaling for 2K+ screens */
+                    * {
+                        /* Use original size for 2K screens */
+                        font-size: 100%;
+                    }
+                    """ + stylesheet
+
+                # Apply the final stylesheet
+                self.setStyleSheet(custom_stylesheet)
+                print_success(f"Applied stylesheet from style.qss with resolution scaling for {screen_width}px width")
             else:
                 print_error(f"Stylesheet not found at: {style_path}")
         except Exception as e:
             print_error(f"Error applying stylesheet: {e}")
 
+    def adjust_ui_elements(self):
+        """Adjust UI element dimensions based on window size"""
+        # Calculate a scale factor based on window height
+        scale_factor = self.height() / 900.0  # Assuming 900px is the "standard" height
+
+        # Apply minimum heights to various UI elements
+        button_height = max(int(50 * scale_factor), 40)  # Minimum 40px
+
+        # Update button heights
+        if hasattr(self, 'submit_button'):
+            self.submit_button.setMinimumHeight(button_height)
+        if hasattr(self, 'hint_button'):
+            self.hint_button.setMinimumHeight(button_height)
+        if hasattr(self, 'skip_button'):
+            self.skip_button.setMinimumHeight(button_height)
+        if hasattr(self, 'change_album_button'):
+            self.change_album_button.setMinimumHeight(button_height)
+        if hasattr(self, 'confirm_button'):
+            self.confirm_button.setMinimumHeight(button_height)
+        if hasattr(self, 'guess_input'):
+            self.guess_input.setMinimumHeight(button_height)
+
+        # Adjust other UI element dimensions as needed
+
+        print_debug(f"UI elements adjusted with scale factor: {scale_factor:.2f}")
+
+    def showEvent(self, event):
+        """Handle window show event"""
+        super().showEvent(event)
+        # Adjust UI elements based on window size
+        QtCore.QTimer.singleShot(10, self.adjust_ui_elements)
 
 # Main execution
 if __name__ == "__main__":

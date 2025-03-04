@@ -1,3 +1,8 @@
+/* Base font size adjustment for high resolution displays */
+* {
+    font-size: 16px; /* Base size that will be adjusted by screen resolution */
+}
+
 /* Main Window Styles */
 QMainWindow {
     background-color: transparent;
@@ -390,4 +395,15 @@ QMainWindow {
 #suggestionList::item:selected, #suggestionList::item:hover {
     background-color: #2a2d35;
     color: #e6c15a;
+}
+
+/* Responsive adjustments for different screen resolutions */
+/* This section will scale everything on Full HD screens while keeping original size on 2K */
+@media (max-width: 1920px) {
+    /* Scale UI elements for Full HD screens by adjusting the root font size */
+    * {
+        /* Scale to 85% of original size for Full HD displays */
+        /* Adjust this value to fine-tune the scaling */
+        font-size: 85%;
+    }
 }
