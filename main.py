@@ -1029,6 +1029,32 @@ class SongGuesserApp(QMainWindow):
         except Exception as e:
             print_error(f"Error applying stylesheet: {e}")
 
+    def fix_selector_title(self):
+        """Directly fix the selector title visibility and position it higher"""
+        try:
+            # Find the title in the selection frame
+            if hasattr(self.album_selector, 'selection_frame'):
+                # Try to find the label by object name
+                for child in self.album_selector.selection_frame.findChildren(QLabel):
+                    if child.objectName() == "selectorTitle" or child.text() == "SELECT YOUR MUSIC":
+                        # Fix the label position to move it higher
+                        child.setMinimumHeight(40)
+
+                        # Modify margins to position text higher
+                        child.setContentsMargins(0, 5, 0, 10)
+
+                        # Add margin-top: -10px to move text higher in its container
+                        child.setStyleSheet(
+                            "font-size: 24px; font-weight: bold; color: #e6c15a; margin-top: -10px; margin-bottom: 10px;")
+
+                        print_debug("Moved selector title higher")
+                        return
+
+            print_debug("Could not find selector title to fix - manual adjustment may be needed")
+        except Exception as e:
+            print_error(f"Error fixing selector title: {e}")
+
+
     def adjust_for_resolution(self):
         """Apply specific size adjustments based on the screen resolution"""
         screen = QApplication.primaryScreen().geometry()
@@ -1103,6 +1129,8 @@ class SongGuesserApp(QMainWindow):
                 self.album_selector.howToFrame.setMinimumHeight(180)  # Set minimum height
 
             print_debug(f"Applied Full HD resolution adjustments with increased height")
+
+            self.fix_selector_title()
 
     def adjust_ui_elements(self):
         """Adjust UI element dimensions based on window size"""
