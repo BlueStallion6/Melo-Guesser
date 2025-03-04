@@ -1054,6 +1054,36 @@ class SongGuesserApp(QMainWindow):
         except Exception as e:
             print_error(f"Error fixing selector title: {e}")
 
+    def move_confirm_button_up(self):
+        """Move the START PLAYING button higher by reducing spacing above it"""
+        try:
+            if hasattr(self.album_selector, 'selection_frame') and hasattr(self.album_selector, 'confirm_button'):
+                # Get the layout
+                layout = self.album_selector.selection_frame.layout()
+                if layout:
+                    # Find the info frame (frame containing album info) which is above the button
+                    info_frame = None
+                    for i in range(layout.count()):
+                        item = layout.itemAt(i)
+                        if item and item.widget() and isinstance(item.widget(), QFrame):
+                            if item.widget().findChild(QLabel, "albumInfo"):
+                                info_frame = item.widget()
+                                break
+
+                    if info_frame:
+                        # Reduce the bottom margin of the info frame to move button up
+                        info_frame.setContentsMargins(5, 5, 5, 0)
+
+                    # Set negative margin on button to pull it up
+                    self.album_selector.confirm_button.setStyleSheet(
+                        self.album_selector.confirm_button.styleSheet() + "; margin-top: -25px;"
+                    )
+
+                    print_debug("Moved confirm button higher by adjusting spacing")
+
+        except Exception as e:
+            print_error(f"Error moving confirm button: {e}")
+
 
     def adjust_for_resolution(self):
         """Apply specific size adjustments based on the screen resolution"""
@@ -1131,6 +1161,7 @@ class SongGuesserApp(QMainWindow):
             print_debug(f"Applied Full HD resolution adjustments with increased height")
 
             self.fix_selector_title()
+            self.move_confirm_button_up()
 
     def adjust_ui_elements(self):
         """Adjust UI element dimensions based on window size"""
