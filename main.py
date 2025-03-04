@@ -357,6 +357,7 @@ class ArtistAlbumSelector(QWidget):
         # Title
         title = QLabel("SELECT YOUR MUSIC")
         title.setObjectName("selectorTitle")
+        title.setMinimumHeight(30)  # Ensure enough height
         title.setAlignment(Qt.AlignCenter)
         selection_layout.addWidget(title)
 
@@ -1060,13 +1061,27 @@ class SongGuesserApp(QMainWindow):
 
             # Set specific minimum height for selection frame
             if hasattr(self.album_selector, 'selection_frame'):
-                self.album_selector.selection_frame.setMinimumHeight(370)  # Increased from 320
+                # Access the title label inside the selection frame
+                for child in self.album_selector.selection_frame.children():
+                    if isinstance(child, QLabel) and child.objectName() == "selectorTitle":
+                        # Ensure the label has enough space
+                        child.setMinimumHeight(35)  # Increase minimum height
+                        # Adjust margin if needed
+                        child.setContentsMargins(0, 10, 0, 10)
+                        print_debug("Adjusted selector title height and margins")
 
-                # Access internal layouts to increase spacing
+                # Add more padding at the top of the selection frame layout
                 if hasattr(self.album_selector.selection_frame, 'layout'):
                     selection_layout = self.album_selector.selection_frame.layout()
                     if selection_layout:
-                        selection_layout.setSpacing(25)  # Increase internal spacing
+                        current_margins = selection_layout.contentsMargins()
+                        selection_layout.setContentsMargins(
+                            current_margins.left(),
+                            30,  # Increase top margin to 30px
+                            current_margins.right(),
+                            current_margins.bottom()
+                        )
+                        print_debug("Increased selection frame top margin")
 
             # Increase the height of the welcome frame
             if hasattr(self.album_selector, 'welcomeFrame'):
