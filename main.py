@@ -533,13 +533,13 @@ class SongGuesserApp(QMainWindow):
             width = int(screen_width * 0.55)
             height = int(screen_height * 0.7)
         else:  # Full HD or lower resolution
-            # For Full HD, increase the percentage slightly to maintain visibility
+            # Make the app significantly taller on Full HD screens - increase to 85%
             width = int(screen_width * 0.65)
-            height = int(screen_height * 0.75)
+            height = int(screen_height * 0.85)  # Increased from 0.75 to 0.85
 
         # Enforce minimum dimensions
         min_width = 650
-        min_height = 600
+        min_height = 700  # Increased from 600 to 700
         width = max(width, min_width)
         height = max(height, min_height)
 
@@ -1030,7 +1030,7 @@ class SongGuesserApp(QMainWindow):
 
             # Adjust selection frame vertical spacing
             if hasattr(self.album_selector, 'layout'):
-                self.album_selector.layout().setSpacing(15)  # Reduce spacing in selector view
+                self.album_selector.layout().setSpacing(20)  # Increase spacing in selector view
 
             # Fix combo box heights
             if hasattr(self.album_selector, 'artist_combo'):
@@ -1054,15 +1054,29 @@ class SongGuesserApp(QMainWindow):
             if hasattr(self, 'change_album_button'):
                 self.change_album_button.setMinimumHeight(min_height_button)
 
-            # Adjust frame margins and spacing
-            self.content_layout.setContentsMargins(20, 15, 20, 15)
-            self.content_layout.setSpacing(15)
+            # Increase vertical space throughout the app
+            self.content_layout.setContentsMargins(20, 20, 20, 20)  # Increased top/bottom margins
+            self.content_layout.setSpacing(25)  # Increased spacing between main elements
 
             # Set specific minimum height for selection frame
             if hasattr(self.album_selector, 'selection_frame'):
-                self.album_selector.selection_frame.setMinimumHeight(320)
+                self.album_selector.selection_frame.setMinimumHeight(370)  # Increased from 320
 
-            print_debug(f"Applied Full HD resolution adjustments")
+                # Access internal layouts to increase spacing
+                if hasattr(self.album_selector.selection_frame, 'layout'):
+                    selection_layout = self.album_selector.selection_frame.layout()
+                    if selection_layout:
+                        selection_layout.setSpacing(25)  # Increase internal spacing
+
+            # Increase the height of the welcome frame
+            if hasattr(self.album_selector, 'welcomeFrame'):
+                self.album_selector.welcomeFrame.setMinimumHeight(200)  # Set minimum height
+
+            # Increase the height of the how-to-play frame
+            if hasattr(self.album_selector, 'howToFrame'):
+                self.album_selector.howToFrame.setMinimumHeight(180)  # Set minimum height
+
+            print_debug(f"Applied Full HD resolution adjustments with increased height")
 
     def adjust_ui_elements(self):
         """Adjust UI element dimensions based on window size"""
