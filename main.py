@@ -25,7 +25,8 @@ try:
     from albums_database import (the_weeknd_albums, billie_eilish_albums,
                                  lana_del_rey_albums, tame_impala_albums,
                                  olivia_rodrigo_albums, kanye_west_albums,
-                                 dua_lipa_albums, taylor_swift_albums)
+                                 dua_lipa_albums, taylor_swift_albums,
+                                 eminem_albums, xxxtentacion_albums, juice_wrld_albums)
 
 except ImportError as e:
     print(f"ImportError >> {e}")
@@ -56,6 +57,9 @@ Olivia_Rodrigo = "Olivia Rodrigo"
 Kanye_West = "Kanye West"
 Dua_Lipa = "Dua Lipa"
 Taylor_Swift = "Taylor Swift"
+XXXTETACION = "XXXTENTACION"
+Eminem = "Eminem"
+Juice_WRLD = "Juice WRLD"
 
 #######################################################################################################################
 
@@ -390,7 +394,11 @@ class ArtistAlbumSelector(QWidget):
             "Olivia Rodrigo": olivia_rodrigo_albums,
             "Kanye West": kanye_west_albums,
             "Dua Lipa": dua_lipa_albums,
-            "Taylor Swift": taylor_swift_albums
+            "Taylor Swift": taylor_swift_albums,
+            "Eminem": eminem_albums,
+            "XXXTENTACION": xxxtentacion_albums,
+            "Juice WRLD": juice_wrld_albums
+
         }
 
         ####################################################################################################################
