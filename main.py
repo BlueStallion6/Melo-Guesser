@@ -1181,7 +1181,7 @@ if __name__ == "__main__":
 
     script_dir = os.path.dirname(os.path.abspath(__file__))
 
-    icon_path = os.path.join(script_dir, "assets", "image1.png")
+    icon_path = os.path.join(script_dir, "assets", "image2.png")
 
     if os.path.exists(icon_path):
         print_success(f"Icon found at: {icon_path}")
