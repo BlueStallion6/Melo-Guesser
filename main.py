@@ -147,7 +147,7 @@ def get_random_lyric_line(title, artist):
 
         # Check if the first line has 7 or fewer words
         words = [word for word in selected_line.split() if word]
-        if len(words) <= 7 and len(clean_lines) > 1:
+        if len(words) <= 6 and len(clean_lines) > 1:
             # Add the next line immediately
             next_idx = (start_idx + 1) % len(clean_lines)
             selected_line = f"{selected_line}\n{clean_lines[next_idx]}"
