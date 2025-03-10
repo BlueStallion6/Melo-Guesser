@@ -1499,3 +1499,107 @@ juice_wrld_albums = {
         ]
     }
 }
+one_direction_albums = {
+    "Up All Night": {
+        "release_year": 2011,
+        "cover_art": "upallnight.jpg",
+        "songs": [
+            "What Makes You Beautiful",
+            "Gotta Be You",
+            "One Thing",
+            "More Than This",
+            "Up All Night",
+            "I Wish",
+            "Tell Me a Lie",
+            "Taken",
+            "I Want",
+            "Everything About You",
+            "Same Mistakes",
+            "Save You Tonight",
+            "Stole My Heart"
+        ]
+    },
+    "Take Me Home": {
+        "release_year": 2012,
+        "cover_art": "takemehome.jpg",
+        "songs": [
+            "Live While We're Young",
+            "Kiss You",
+            "Little Things",
+            "C'mon, C'mon",
+            "Last First Kiss",
+            "Heart Attack",
+            "Rock Me",
+            "Change My Mind",
+            "I Would",
+            "Over Again",
+            "Back for You",
+            "They Don't Know About Us",
+            "Summer Love"
+        ]
+    },
+    "Midnight Memories": {
+        "release_year": 2013,
+        "cover_art": "midnightmemories.jpg",
+        "songs": [
+            "Best Song Ever",
+            "Story of My Life",
+            "Diana",
+            "Midnight Memories",
+            "You & I",
+            "Don't Forget Where You Belong",
+            "Strong",
+            "Happily",
+            "Right Now",
+            "Little Black Dress",
+            "Through the Dark",
+            "Something Great",
+            "Little White Lies",
+            "Better Than Words"
+        ]
+    },
+    "Four": {
+        "release_year": 2014,
+        "cover_art": "four.jpg",
+        "songs": [
+            "Steal My Girl",
+            "Ready to Run",
+            "Where Do Broken Hearts Go",
+            "18",
+            "Fool's Gold",
+            "Night Changes",
+            "No Control",
+            "Fireproof",
+            "Spaces",
+            "Stockholm Syndrome",
+            "Clouds",
+            "Change Your Ticket",
+            "Illusion",
+            "Once in a Lifetime",
+            "Act My Age"
+        ]
+    },
+    "Made in the A.M.": {
+        "release_year": 2015,
+        "cover_art": "madeintham.jpg",
+        "songs": [
+            "Hey Angel",
+            "Drag Me Down",
+            "Perfect",
+            "Infinity",
+            "End of the Day",
+            "If I Could Fly",
+            "Long Way Down",
+            "Never Enough",
+            "Olivia",
+            "What a Feeling",
+            "Love You Goodbye",
+            "I Want to Write You a Song",
+            "History",
+            "Temporary Fix",
+            "Walking in the Wind",
+            "Wolves",
+            "A.M."
+        ]
+    }
+}

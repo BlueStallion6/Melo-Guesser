@@ -26,7 +26,8 @@ try:
                                  lana_del_rey_albums, tame_impala_albums,
                                  olivia_rodrigo_albums, kanye_west_albums,
                                  dua_lipa_albums, taylor_swift_albums,
-                                 eminem_albums, xxxtentacion_albums, juice_wrld_albums)
+                                 eminem_albums, xxxtentacion_albums, juice_wrld_albums,
+                                 one_direction_albums)
 
 except ImportError as e:
     print(f"ImportError >> {e}")
@@ -60,6 +61,7 @@ Taylor_Swift = "Taylor Swift"
 XXXTETACION = "XXXTENTACION"
 Eminem = "Eminem"
 Juice_WRLD = "Juice WRLD"
+One_Direction = "One Direction"
 
 #######################################################################################################################
 
@@ -397,7 +399,8 @@ class ArtistAlbumSelector(QWidget):
             "Taylor Swift": taylor_swift_albums,
             "Eminem": eminem_albums,
             "XXXTENTACION": xxxtentacion_albums,
-            "Juice WRLD": juice_wrld_albums
+            "Juice WRLD": juice_wrld_albums,
+            "One Direction": one_direction_albums
 
         }
 
