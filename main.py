@@ -1162,10 +1162,6 @@ class SongGuesserApp(QMainWindow):
         if hasattr(self, 'guess_input'):
             self.guess_input.setMinimumHeight(button_height)
 
-        # Adjust other UI element dimensions as needed
-
-        print_debug(f"UI elements adjusted with scale factor: {scale_factor:.2f}")
-
     def showEvent(self, event):
         """Handle window show event"""
         super().showEvent(event)
@@ -1173,7 +1169,6 @@ class SongGuesserApp(QMainWindow):
         QtCore.QTimer.singleShot(10, self.adjust_ui_elements)
         # Apply resolution-specific adjustments
         QtCore.QTimer.singleShot(20, self.adjust_for_resolution)
-
 
 # Main execution
 if __name__ == "__main__":
