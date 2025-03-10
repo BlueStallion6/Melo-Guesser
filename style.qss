@@ -1,9 +1,7 @@
-/* Base font size adjustment for high resolution displays */
 * {
     font-size: 16px; /* Base size for all resolutions */
 }
 
-/* Main Window Styles */
 QMainWindow {
     background-color: transparent;
 }
@@ -19,7 +17,6 @@ QMainWindow {
     border: none;
 }
 
-/* Title Bar */
 #titleBar {
     background-color: #080a10;
     border-top-left-radius: 15px;
@@ -57,13 +54,11 @@ QMainWindow {
     color: white;
 }
 
-/* Header Frame */
 #headerFrame {
     border-bottom: 1px solid #1e2028;
     padding-bottom: 5px;
 }
 
-/* Game Header */
 #gameHeader {
     color: #e6c15a;
     font-size: 22px;
@@ -71,7 +66,7 @@ QMainWindow {
     letter-spacing: 1px;
 }
 
-/* Stats Frames */
+
 #scoreFrame, #streakFrame {
     background-color: #14161d;
     border: 1px solid #1e2028;
@@ -91,14 +86,14 @@ QMainWindow {
     font-weight: bold;
 }
 
-/* Lyric Frame */
+
 #lyricFrame {
     background-color: #14161d;
     border: 1px solid #1e2028;
     border-radius: 8px;
 }
 
-/* Quote Marks */
+
 #quoteOpen, #quoteClose {
     color: #6b6d74;
     font-size: 42px;
@@ -106,7 +101,7 @@ QMainWindow {
     font-weight: bold;
 }
 
-/* Lyric Display */
+
 #lyricDisplay {
     background-color: transparent;
     border: none;
@@ -117,7 +112,7 @@ QMainWindow {
     font-style: italic;
 }
 
-/* Input Frame */
+
 #inputFrame {
     background-color: transparent;
 }
@@ -142,7 +137,6 @@ QMainWindow {
     background-color: #191b22;
 }
 
-/* Buttons */
 #guessButton {
     background-color: #14161d;
     color: #e6c15a;
@@ -195,7 +189,6 @@ QMainWindow {
     color: #0e1016;
 }
 
-/* Result Label */
 #resultLabel {
     color: white;
     font-size: 16px;
@@ -203,12 +196,11 @@ QMainWindow {
     font-weight: bold;
 }
 
-/* Album Selector Styles */
 #artistAlbumSelector {
     background-color: transparent;
 }
 
-/* Welcome Frame */
+
 #welcomeFrame {
     background-color: #191b22;
     border: 1px solid #2a2d35;
@@ -235,7 +227,6 @@ QMainWindow {
     line-height: 1.5;
 }
 
-/* How to Play Frame */
 #howToFrame {
     background-color: #191b22;
     border: 1px solid #2a2d35;
@@ -308,8 +299,8 @@ QMainWindow {
     border-radius: 5px;
     background-color: #1a1d25;
     color: white;
-    selection-background-color: #2a2d35;  /* Darker selection background */
-    selection-color: #e6c15a;  /* Gold text for selected item */
+    selection-background-color: #2a2d35;
+    selection-color: #e6c15a;
     outline: 0;
 }
 
@@ -375,7 +366,6 @@ QMainWindow {
     color: #0e1016;
 }
 
-/* Song Suggestion Dialog */
 #suggestionDialog {
     background-color: #1a1d25;
     border: 1px solid #2a2d35;
