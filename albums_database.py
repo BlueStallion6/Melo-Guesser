@@ -156,6 +156,33 @@ the_weeknd_albums = {
             "Less Than Zero",
             "Phantom Regret by Jim"
         ]
+    },
+    "Hurry Up Tomorrow": {
+        "release_year": 2025,
+        "cover_art": "hut.jpg",
+        "songs": [
+            "Wake Me Up",
+            "Cry For Me",
+            "I Can't Fucking Sing",
+            "São Paulo",
+            "Until We're Skin & Bones",
+            "Baptized In Fear",
+            "Open Hearts",
+            "Opening Night",
+            "Enjoy The Show",
+            "Given Up On Me",
+            "I Can't Wait To Get There",
+            "Timeless",
+            "Niagara Falls",
+            "Take Me Back To LA",
+            "Big Sleep",
+            "Give Me Mercy",
+            "Drive",
+            "The Abyss",
+            "Red Terror",
+            "Without a Warning",
+            "Hurry Up Tomorrow"
+        ]
     }
 }
 
