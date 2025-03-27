@@ -108,7 +108,7 @@ def get_random_lyric_line(title, artist):
     full_lyrics = get_lyrics(title, artist)
 
     if not full_lyrics:
-        return "Lyrics not found.", []
+        return "This song is instrumental, take a wild guess :)", []
 
     # Split into lines
     lines = full_lyrics.split('\n')
