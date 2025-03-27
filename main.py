@@ -27,7 +27,7 @@ try:
                                  olivia_rodrigo_albums, kanye_west_albums,
                                  dua_lipa_albums, taylor_swift_albums,
                                  eminem_albums, xxxtentacion_albums, juice_wrld_albums,
-                                 one_direction_albums)
+                                 one_direction_albums, bring_me_the_horizon_albums)
 
 except ImportError as e:
     print(f"ImportError >> {e}")
@@ -62,6 +62,7 @@ XXXTETACION = "XXXTENTACION"
 Eminem = "Eminem"
 Juice_WRLD = "Juice WRLD"
 One_Direction = "One Direction"
+Bring_Me_The_Horizon = "Bring Me The Horizon"
 
 #######################################################################################################################
 
@@ -149,7 +150,7 @@ def get_random_lyric_line(title, artist):
 
         # Check if the first line has 7 or fewer words
         words = [word for word in selected_line.split() if word]
-        if len(words) <= 6 and len(clean_lines) > 1:
+        if len(words) <= 7 and len(clean_lines) > 1:
             # Add the next line immediately
             next_idx = (start_idx + 1) % len(clean_lines)
             selected_line = f"{selected_line}\n{clean_lines[next_idx]}"
@@ -400,7 +401,8 @@ class ArtistAlbumSelector(QWidget):
             "Eminem": eminem_albums,
             "XXXTENTACION": xxxtentacion_albums,
             "Juice WRLD": juice_wrld_albums,
-            "One Direction": one_direction_albums
+            "One Direction": one_direction_albums,
+            "Bring Me The Horizon": bring_me_the_horizon_albums
 
         }
 

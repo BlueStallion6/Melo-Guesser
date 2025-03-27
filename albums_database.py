@@ -1629,3 +1629,144 @@ one_direction_albums = {
         ]
     }
 }
+
+bring_me_the_horizon_albums = {
+    "Count Your Blessings": {
+        "release_year": 2006,
+        "cover_art": "countyourblessings.jpg",
+        "songs": [
+            "Pray for Plagues",
+            "Tell Slater Not to Wash His Dick",
+            "For Stevie Wonder's Eyes Only (Braille)",
+            "A Lot Like Vegas",
+            "Black & Blue",
+            "Slow Dance",
+            "Liquor & Love Lost",
+            "No Need for Introductions, I've Read About Girls Like You on the Backs of Toilet Doors",
+            "(I Used to Make Out With) Medusa",
+            "Fifteen Fathoms, Counting"
+        ]
+    },
+    "Suicide Season": {
+        "release_year": 2008,
+        "cover_art": "suicideseason.jpg",
+        "songs": [
+            "The Comedown",
+            "Chelsea Smile",
+            "It Was Written in Blood",
+            "Death Breath",
+            "Football Season Is Over",
+            "Sleep with One Eye Open",
+            "Diamonds Aren't Forever",
+            "The Sadness Will Never End",
+            "No Need for Introductions, I've Read About Girls Like You on the Backs of Toilet Doors",
+            "Suicide Season"
+        ]
+    },
+    "There Is a Hell Believe Me I've Seen It. There Is a Heaven Let's Keep It a Secret": {
+        "release_year": 2010,
+        "cover_art": "thereisahell.jpg",
+        "songs": [
+            "Crucify Me",
+            "Anthem",
+            "It Never Ends",
+            "Fuck",
+            "Don't Go",
+            "Home Sweet Hole",
+            "Alligator Blood",
+            "Visions",
+            "Blacklist",
+            "Memorial",
+            "Blessed with a Curse",
+            "The Fox and the Wolf"
+        ]
+    },
+    "Sempiternal": {
+        "release_year": 2013,
+        "cover_art": "sempiternal.jpg",
+        "songs": [
+            "Can You Feel My Heart",
+            "The House of Wolves",
+            "Empire (Let Them Sing)",
+            "Sleepwalking",
+            "Go to Hell, for Heaven's Sake",
+            "Shadow Moses",
+            "And the Snakes Start to Sing",
+            "Seen It All Before",
+            "Antivist",
+            "Crooked Young",
+            "Hospital for Souls",
+            "Join the Club",
+            "Chasing Rainbows",
+            "Deathbeds"
+        ]
+    },
+    "That's the Spirit": {
+        "release_year": 2015,
+        "cover_art": "thatsthespirit.jpg",
+        "songs": [
+            "Doomed",
+            "Happy Song",
+            "Throne",
+            "True Friends",
+            "Follow You",
+            "What You Need",
+            "Avalanche",
+            "Run",
+            "Drown",
+            "Blasphemy",
+            "Oh No"
+        ]
+    },
+    "amo": {
+        "release_year": 2019,
+        "cover_art": "amo.jpg",
+        "songs": [
+            "i apologise if you feel something",
+            "MANTRA",
+            "nihilist blues",
+            "in the dark",
+            "wonderful life",
+            "ouch",
+            "medicine",
+            "sugar honey ice & tea",
+            "why you gotta kick me when i'm down?",
+            "fresh bruises",
+            "mother tongue",
+            "heavy metal",
+            "i don't know what to say"
+        ]
+    },
+    "POST HUMAN: SURVIVAL HORROR": {
+        "release_year": 2020,
+        "cover_art": "posthuman.jpg",
+        "songs": [
+            "Dear Diary,",
+            "Parasite Eve",
+            "Teardrops",
+            "Obey",
+            "Itch for the Cure (When Will We Be Free?)",
+            "Kingslayer",
+            "1x1",
+            "Ludens",
+            "One Day the Only Butterflies Left Will Be in Your Chest as You March Towards Your Death"
+        ]
+    },
+    "POST HUMAN: NeX GEn": {
+        "release_year": 2023,
+        "cover_art": "posthumannexgen.jpg",
+        "songs": [
+            "DArkSide",
+            "AmEN!",
+            "DiE4u",
+            "kOsOvO",
+            "LosT",
+            "sTrAnGeRs",
+            "BaD LiFe",
+            "fUjiSpEEd",
+            "dELTA",
+            "DiE4EVA",
+            "sTraNgeRs² [w/ AI]"
+        ]
+    }
+}
