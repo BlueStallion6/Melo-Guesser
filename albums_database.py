@@ -165,7 +165,6 @@ the_weeknd_albums = {
             "Cry For Me",
             "I Can't Fucking Sing",
             "São Paulo",
-            "Until We're Skin & Bones",
             "Baptized In Fear",
             "Open Hearts",
             "Opening Night",
