@@ -1499,30 +1499,6 @@ juice_wrld_albums = {
             "From My Window",
             "Sometimes"
         ]
-    },
-    "The Party Never Ends": {
-        "release_year": 2023,
-        "cover_art": "thepartyneverends.jpg",
-        "songs": [
-            "Another Thing To Do It",
-            "Aquafina",
-            "Cavalier",
-            "Cross the Globe",
-            "Dark Arts",
-            "Diary",
-            "Draco On Me",
-            "Gone",
-            "Ha Ha",
-            "High All Night",
-            "Lace It",
-            "Not Enough",
-            "Overseer",
-            "Real Ones",
-            "Rise Above",
-            "Wake Up",
-            "Way Too High",
-            "What You On"
-        ]
     }
 }
 one_direction_albums = {
